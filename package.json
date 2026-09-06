@@ -1,1 +1,13 @@
-{"name":"ai-instagram-caption-generator-pro","private":true,"version":"3.0.0","type":"module","dependencies":{"openai":"^5.0.0"}}
+{
+  "name": "ai-instagram-caption-generator-pro",
+  "private": true,
+  "version": "3.0.0",
+  "type": "module",
+  "scripts": {
+    "check": "node --check app.js && node --check api/config.js && node --check api/generate.js",
+    "start": "npx vercel dev"
+  },
+  "dependencies": {
+    "openai": "^5.0.0"
+  }
+}

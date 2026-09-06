@@ -1,35 +1,47 @@
-# AI Instagram Caption Generator Pro
+# CaptionPro
 
-Features:
-- Real OpenAI caption generation via `/api/generate`
-- Email/password Login & Signup with Supabase Auth
-- User dashboard
-- Cloud caption history per user
-- Delete history items
-- Favorites/save, copy, share
-- Responsive professional UI
+A production-ready, static Vercel site for generating Instagram captions, Reel hooks, and hashtags with OpenAI. Users can create a Supabase account to keep a private cloud history of their generations.
 
-## Vercel setup
+## Project layout
 
-Add these Environment Variables for **Production**:
+- `index.html` — accessible application shell, landing page, dialogs, and dashboard markup.
+- `styles.css` — responsive design system and layouts for mobile through desktop.
+- `app.js` — client-side UI components, Supabase Auth, history, copy/download/share controls, and form state.
+- `api/generate.js` — server-only OpenAI generation endpoint.
+- `api/config.js` — supplies the browser with only the Supabase URL and public/anon key.
+- `supabase.sql` — table, constraints, row-level security policies, and index.
 
-- `OPENAI_API_KEY` = your OpenAI secret key
-- `OPENAI_MODEL` = a model available to your OpenAI API project
-- `SUPABASE_URL` = your Supabase project URL
-- `SUPABASE_ANON_KEY` = your Supabase anon/public key
+## Local development
 
-The app also supports Supabase's current public names as a fallback:
+```bash
+npm install
+npm run check
+npm start
+```
 
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+`npm start` uses the Vercel CLI through `npx`; add the environment variables below to your local Vercel environment or deployment settings. Never commit a real `.env` file.
 
-The public Supabase publishable key is safe for browser use when Row Level Security is configured correctly. Never expose an OpenAI API key or a Supabase service-role/secret key in browser code.
+## Required environment variables
 
-## Supabase database
+Configure these in Vercel for each environment (Production, Preview, and Development):
 
-Run `supabase.sql` in Supabase Dashboard → SQL Editor.
+- `OPENAI_API_KEY` — OpenAI server secret. **Do not put this in frontend code.**
+- `OPENAI_MODEL` — a model that is available to your OpenAI API project.
+- `SUPABASE_URL` — Supabase project URL.
+- `SUPABASE_ANON_KEY` — Supabase public/anon key.
 
-## Deploy
+For compatibility, the app also recognizes `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` as fallbacks on the server. The public Supabase key may be sent to the browser only because the database uses Row Level Security. Never expose a Supabase service-role/secret key.
 
-After changing Environment Variables, create a new Vercel deployment. Then open `/api/config` on the deployed site; it should return JSON containing `url` and `anonKey`.
+## Supabase setup
 
+1. In Supabase, enable Email Auth and configure the site URL / redirect URL for your deployed domain.
+2. Run `supabase.sql` in **Dashboard → SQL Editor**. The script can be safely rerun; it refreshes the application policies and constraints.
+3. Verify the `captions` table has Row Level Security enabled before deploying.
+
+## Deployment
+
+Deploy to Vercel after setting the environment variables. `/api/config` should return JSON with `url` and `anonKey`; it must never return the OpenAI key. Test sign-up, email confirmation, generation, and history deletion against the deployed URL.
+
+## Operational notes
+
+The generator is intentionally available before sign-in, while signed-in users receive saved history. Before opening a public high-traffic service, configure Vercel-level rate limiting/bot protection and monitor OpenAI usage to protect against automated cost abuse.
