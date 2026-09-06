@@ -14,6 +14,20 @@ create table if not exists public.captions (
 
 alter table public.captions enable row level security;
 
+alter table public.captions
+  drop constraint if exists captions_content_type_check,
+  drop constraint if exists captions_style_check,
+  drop constraint if exists captions_language_check;
+
+alter table public.captions
+  add constraint captions_content_type_check check (content_type in ('post', 'reel', 'story', 'bio')),
+  add constraint captions_style_check check (style in ('cool', 'funny', 'attitude', 'love', 'motivational', 'aesthetic', 'professional', 'luxury', 'travel')),
+  add constraint captions_language_check check (language in ('hinglish', 'hindi', 'english', 'punjabi', 'bengali'));
+
+drop policy if exists "Users can view own captions" on public.captions;
+drop policy if exists "Users can insert own captions" on public.captions;
+drop policy if exists "Users can delete own captions" on public.captions;
+
 create policy "Users can view own captions"
 on public.captions for select
 using (auth.uid() = user_id);
